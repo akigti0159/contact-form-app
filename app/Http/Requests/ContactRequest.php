@@ -6,24 +6,30 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ContactRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
+    protected function prepareForValidation(): void
+    {
+        // tel1, tel2, tel3 または tel_1, tel_2, tel_3 のどちらで送信されても結合
+        $tel1 = $this->input('tel1', $this->input('tel_1'));
+        $tel2 = $this->input('tel2', $this->input('tel_2'));
+        $tel3 = $this->input('tel3', $this->input('tel_3'));
+
+        if ($tel1 || $tel2 || $tel3) {
+            $this->merge([
+                'tel' => $tel1 . $tel2 . $tel3,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [
-            'first_name'  => ['required', 'string', 'max:255'],
             'last_name'   => ['required', 'string', 'max:255'],
+            'first_name'  => ['required', 'string', 'max:255'],
             'gender'      => ['required', 'integer', 'in:1,2,3'],
             'email'       => ['required', 'string', 'email', 'max:255'],
             'tel'         => ['required', 'string', 'regex:/^[0-9]{10,11}$/'],
@@ -34,14 +40,11 @@ class ContactRequest extends FormRequest
         ];
     }
 
-    /**
-     * エラーメッセージの定義
-     */
     public function messages(): array
     {
         return [
-            'first_name.required'  => '名を入力してください',
             'last_name.required'   => '姓を入力してください',
+            'first_name.required'  => '名を入力してください',
             'gender.required'      => '性別を選択してください',
             'gender.in'            => '性別を選択してください',
             'email.required'       => 'メールアドレスを入力してください',

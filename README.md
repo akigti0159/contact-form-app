@@ -12,17 +12,20 @@
 ## ER図
 ```mermaid
 erDiagram
-    users ||--o{ contacts : ""
-    categories ||--o{ contacts : ""
+    categories ||--o{ contacts : "has many"
     users {
         bigint id PK
         varchar name
         varchar email
         varchar password
+        timestamp created_at
+        timestamp updated_at
     }
     categories {
         bigint id PK
         varchar content
+        timestamp created_at
+        timestamp updated_at
     }
     contacts {
         bigint id PK
@@ -31,15 +34,17 @@ erDiagram
         varchar last_name
         tinyint gender
         varchar email
-        varchar tell
+        varchar tel
         varchar address
         varchar building
         text detail
+        timestamp created_at
+        timestamp updated_at
     }
 ```
 
 ## 環境構築手順
-    -リポジトリをクローン
+-リポジトリをクローン
 git clone <リポジトリURL>
 cd contact-form-app
 
